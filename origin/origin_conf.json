@@ -1,0 +1,60 @@
+{
+  "main":{
+          "servicename":{
+                "value": "Ceton",
+                "config_file": false,
+                "config_web": false
+                },
+          "dictpopname":{
+                      "value": "ceton",
+                      "config_file": false,
+                      "config_web": false
+                    },
+          "reponame":{
+                          "value": "fHDHR_Ceton",
+                          "config_file": false,
+                          "config_web": false
+                        },
+          "required":{
+                          "value": "ceton/ceton_ip",
+                          "config_file": false,
+                          "config_web": false
+                        }
+  },
+  "fhdhr":{
+          "friendlyname":{
+                    "value": "fHDHR-Ceton",
+                    "config_file": true,
+                    "config_web": true
+                },
+          "tuner_count":{
+                  "value": 3,
+                  "config_file": true,
+                  "config_web": true
+                },
+          "reporting_firmware_name":{
+                                    "value": "fHDHR_Ceton",
+                                    "config_file": true,
+                                    "config_web": true
+                                  }
+  },
+  "epg":{
+          "method":{
+                    "value": "origin",
+                    "config_file": true,
+                    "config_web": true
+                },
+          "valid_epg_methods":{
+                          "value": "None,blocks,origin,zap2it,tvtv",
+                          "config_file": false,
+                          "config_web": false
+                        }
+  },
+  "ceton":{
+          "ceton_ip":{
+                    "value": "none",
+                    "config_file": true,
+                    "config_web": true
+                }
+  }
+}
