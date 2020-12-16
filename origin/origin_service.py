@@ -54,10 +54,10 @@ class OriginService():
     def startstop_ceton_tuner(self, instance, startstop):
         if not startstop:
             port = 0
-            self.fhdhr.logger.info('Ceton tuner  to be stopped' % str(instance))
+            self.fhdhr.logger.info('Ceton tuner %s to be stopped' % str(instance))
         else:
             port = randint(41001, 49999)
-            self.fhdhr.logger.info('Ceton tuner#: ' + str(instance) + ' to be started')
+            self.fhdhr.logger.info('Ceton tuner %s to be started' % str(instance))
 
         StartStopUrl = ('http://' + self.fhdhr.config.dict["origin"]["ceton_ip"] +
                         '/stream_request.cgi'
@@ -111,11 +111,10 @@ class OriginService():
             try:
                 statusUrlReq = self.fhdhr.web.session.get(statusUrl)
                 statusUrlReq.raise_for_status()
-                print(statusUrlReq)
             except self.fhdhr.web.exceptions.HTTPError as err:
                 self.fhdhr.logger.error('Error getting status on fHDHR tuner#: %s: %s' % (instance, err))
 
-            tunerdict = json.loads(statusUrlReq.text)
+            tunerdict = statusUrlReq.json()
 
             if tunerdict["status"] == "Active":
                 if tunerdict["channel"] == chandict["number"]:
