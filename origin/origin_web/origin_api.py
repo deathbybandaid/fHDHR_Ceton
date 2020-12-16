@@ -1,6 +1,5 @@
-from flask import Response, request, redirect, abort, stream_with_context
-import urllib.parse
-import origin
+from flask import request, redirect
+
 
 class Origin_API():
     endpoints = ["/api/origin"]
@@ -14,9 +13,6 @@ class Origin_API():
         return self.get(*args)
 
     def get(self, *args):
-        client_address = request.remote_addr
-
-        accessed_url = request.args.get('accessed', default=request.url, type=str)
 
         method = request.args.get('method', None, type=str)
 
@@ -25,10 +21,9 @@ class Origin_API():
         redirect_url = request.args.get('redirect', default=None, type=str)
 
         if method == "close":
-            origin.OriginService.startstop_ceton_tuner(self, tuner_number, 0)
+            self.fhdhr.originwrapper.originservice.status_dict.startstop_ceton_tuner(self, tuner_number, 0)
 
         if redirect_url:
             return redirect(redirect_url)
         else:
             return "%s Success" % method
-

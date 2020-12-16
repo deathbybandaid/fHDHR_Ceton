@@ -1,11 +1,8 @@
-import datetime
 import re
 import time
 import json
+from random import randint
 
-import fHDHR.tools
-import fHDHR.exceptions
-from random import seed, randint
 
 class OriginService():
 
@@ -16,25 +13,25 @@ class OriginService():
         for i in range(count):
             self.startstop_ceton_tuner(i, 0)
 
-
     def get_ceton_getvar(self, instance, query):
-        query_type = {"Frequency" : "&s=tuner&v=Frequency",
-                      "ProgramNumber" : "&s=mux&v=ProgramNumber",
-                      "CopyProtectionStatus" : "&s=diag&v=CopyProtectionStatus",
-                      "Temperature" : "&s=diag&v=Temperature",
-                      "Signal_Level" : "&s=diag&v=Signal_Level",
-                      "Signal_SNR" : "&s=diag&v=Signal_SNR",
-                      "TransportState" : "&s=av&v=TransportState"
+        query_type = {
+                      "Frequency": "&s=tuner&v=Frequency",
+                      "ProgramNumber": "&s=mux&v=ProgramNumber",
+                      "CopyProtectionStatus": "&s=diag&v=CopyProtectionStatus",
+                      "Temperature": "&s=diag&v=Temperature",
+                      "Signal_Level": "&s=diag&v=Signal_Level",
+                      "Signal_SNR": "&s=diag&v=Signal_SNR",
+                      "TransportState": "&s=av&v=TransportState"
                      }
 
         getVarUrl = ('http://' + self.fhdhr.config.dict["origin"]["ceton_ip"] + '/get_var?i=' + str(instance) + query_type[query])
 
         try:
-           getVarUrlReq = self.fhdhr.web.session.get(getVarUrl)
-           getVarUrlReq.raise_for_status()
+            getVarUrlReq = self.fhdhr.web.session.get(getVarUrl)
+            getVarUrlReq.raise_for_status()
         except self.fhdhr.web.exceptions.HTTPError as err:
-           self.fhdhr.logger.error('Error while getting Ceton tuner variable for: %s' % query)
-           return None
+            self.fhdhr.logger.error('Error while getting Ceton tuner variable for %s: %s' % (query, err))
+            return None
 
         result = re.search('get.>(.*)</body', getVarUrlReq.text)
 
@@ -45,36 +42,35 @@ class OriginService():
         count = int(self.fhdhr.config.dict["fhdhr"]["tuner_count"])
         for instance in range(count):
 
-           result = self.get_ceton_getvar(instance, "TransportState")
+            result = self.get_ceton_getvar(instance, "TransportState")
 
-
-           if result == "STOPPED" :
-               self.fhdhr.logger.info('Selected Ceton tuner#: ' +  str(instance))
-               found = 1
-               break
+            if result == "STOPPED":
+                self.fhdhr.logger.info('Selected Ceton tuner#: ' + str(instance))
+                found = 1
+                break
 
         return found, instance
 
     def startstop_ceton_tuner(self, instance, startstop):
         if not startstop:
-           port = 0
-           self.fhdhr.logger.info('Ceton tuner  to be stopped' % str(instance))
+            port = 0
+            self.fhdhr.logger.info('Ceton tuner  to be stopped' % str(instance))
         else:
-           port = randint(41001, 49999)
-           self.fhdhr.logger.info('Ceton tuner#: '+ str(instance) + ' to be started' )
+            port = randint(41001, 49999)
+            self.fhdhr.logger.info('Ceton tuner#: ' + str(instance) + ' to be started')
 
         StartStopUrl = ('http://' + self.fhdhr.config.dict["origin"]["ceton_ip"] +
-                    '/stream_request.cgi'
-                    )
+                        '/stream_request.cgi'
+                        )
 
         StartStop_data = {"instance_id": instance,
                           "dest_ip": self.fhdhr.config.dict["fhdhr"]["address"],
                           "dest_port": port,
                           "protocol": 0,
                           "start": startstop}
-        StartStopUrl_headers = {
-                            'Content-Type': 'application/json',
-                            'User-Agent': "curl/7.64.1"}
+        # StartStopUrl_headers = {
+        #                    'Content-Type': 'application/json',
+        #                    'User-Agent': "curl/7.64.1"}
 
         try:
             StartStopUrlReq = self.fhdhr.web.session.post(StartStopUrl, StartStop_data)
@@ -87,8 +83,8 @@ class OriginService():
 
     def set_ceton_tuner(self, chandict, instance):
         tuneChannelUrl = ('http://' + self.fhdhr.config.dict["origin"]["ceton_ip"] +
-                    '/channel_request.cgi'
-                    )
+                          '/channel_request.cgi'
+                          )
         tuneChannel_data = {"instance_id": instance,
                             "channel": chandict['number']}
 
@@ -106,9 +102,8 @@ class OriginService():
 
         self.fhdhr.logger.info('Starting Ceton tuner watch dog on tuner#: ' + str(instance))
         statusUrl = ('http://' + self.fhdhr.config.dict["fhdhr"]["address"] + ':' +
-                    str(self.fhdhr.config.dict["fhdhr"]["port"]) +
+                     str(self.fhdhr.config.dict["fhdhr"]["port"]) +
                      '/api/tuners?method=status&tuner=' + str(instance))
-
 
         while True:
             time.sleep(6)
@@ -118,11 +113,11 @@ class OriginService():
                 statusUrlReq.raise_for_status()
                 print(statusUrlReq)
             except self.fhdhr.web.exceptions.HTTPError as err:
-                self.fhdhr.logger.error('Error getting status on fHDHR tuner#: ' + str(instance))
+                self.fhdhr.logger.error('Error getting status on fHDHR tuner#: %s: %s' % (instance, err))
 
             tunerdict = json.loads(statusUrlReq.text)
 
-            if tunerdict["status"] == "Active" :
+            if tunerdict["status"] == "Active":
                 if tunerdict["channel"] == chandict["number"]:
                     continue
                 else:
@@ -133,4 +128,3 @@ class OriginService():
             if killit:
                 self.startstop_ceton_tuner(instance, 0)
                 break
-

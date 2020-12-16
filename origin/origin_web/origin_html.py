@@ -1,9 +1,6 @@
 from flask import request, render_template_string
 import pathlib
 from io import StringIO
-import datetime
-
-from fHDHR.tools import humanized_time
 
 
 class Origin_HTML():
