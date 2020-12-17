@@ -1,6 +1,5 @@
 import re
 import time
-import json
 from random import randint
 
 
