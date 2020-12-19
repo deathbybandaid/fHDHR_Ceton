@@ -28,7 +28,12 @@
                     "config_web": true
                 },
           "tuner_count":{
-                  "value": 3,
+                  "value": 4,
+                  "config_file": true,
+                  "config_web": true
+                },
+          "stream_type":(
+                  "value": ffmpeg,
                   "config_file": true,
                   "config_web": true
                 },
