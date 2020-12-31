@@ -38,6 +38,7 @@ class FFMPEG_Stream():
             finally:
                 ffmpeg_proc.terminate()
                 ffmpeg_proc.communicate()
+                ffmpeg_proc.kill()
                 self.tuner.close()
                 # raise TunerError("806 - Tune Failed")
 
