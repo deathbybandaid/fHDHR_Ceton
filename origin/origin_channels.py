@@ -56,7 +56,7 @@ class OriginChannels():
 
         return cleaned_channels
 
-    def get_channel_stream(self, chandict):
+    def get_channel_stream(self, chandict, stream_args):
 
         found, instance = self.origin.get_ceton_tuner_status(chandict)
 
@@ -88,4 +88,6 @@ class OriginChannels():
         wd = threading.Thread(target=self.origin.tuner_watchdog, args=(chandict, instance))
         wd.start()
 
-        return streamurl
+        stream_info = {"url": streamurl}
+
+        return stream_info
