@@ -14,8 +14,7 @@ class OriginChannels():
         cleaned_channels = []
         url_headers = {'accept': 'application/xml;q=0.9, */*;q=0.8'}
 
-        count_url = ('http://' + self.fhdhr.config.dict["origin"]["ceton_ip"] +
-                     '/view_channel_map.cgi?page=1')
+        count_url = ("http://%s/view_channel_map.cgi?page=1" % self.fhdhr.config.dict["origin"]["ceton_ip"])
 
         try:
             countReq = self.fhdhr.web.session.get(count_url, headers=url_headers)
@@ -69,7 +68,7 @@ class OriginChannels():
 
         if port:
             tuned = self.origin.set_ceton_tuner(chandict, instance)
-            self.fhdhr.logger.info('Preparing Ceton tuner ' + str(instance) + ' on port:' + str(port))
+            self.fhdhr.logger.info("Preparing Ceton tuner %s on port: %s" (instance, port))
         else:
             tuned = None
 
@@ -78,10 +77,8 @@ class OriginChannels():
         self.origin.get_ceton_getvar(instance, "CopyProtectionStatus")
 
         if tuned:
-            self.fhdhr.logger.info('Initiate streaming channel ' +
-                                   str(chandict['number']) +
-                                   ' from Ceton tuner#: ' + str(instance))
-            streamurl = "udp://127.0.0.1:" + str(port)
+            self.fhdhr.logger.info("Initiate streaming channel %s from Ceton tuner#:   %s" % (chandict['number'], instance))
+            streamurl = "udp://127.0.0.1:%s" % port
         else:
             streamurl = None
 
