@@ -83,7 +83,7 @@ class OriginChannels():
 
         if port:
             tuned = self.origin.set_ceton_tuner(chandict, instance)
-            self.fhdhr.logger.info('Preparing Ceton tuner ' + str(instance) + ' on port:' + str(port))
+            self.fhdhr.logger.info('Preparing Ceton tuner %s on port: %s' % (instance,port))
         else:
             tuned = None
 
@@ -92,10 +92,8 @@ class OriginChannels():
         self.origin.get_ceton_getvar(instance, "CopyProtectionStatus")
 
         if tuned:
-            self.fhdhr.logger.info('Initiate streaming channel ' +
-                                   str(chandict['number']) +
-                                   ' from Ceton tuner#: ' + str(instance))
-            streamurl = "udp://127.0.0.1:" + str(port)
+            self.fhdhr.logger.info('Initiate streaming channel %s from Ceton tuner#: %s ' % (chandict['number'],instance))
+            streamurl = "udp://127.0.0.1:%s" % port
         else:
             streamurl = None
 
