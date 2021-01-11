@@ -23,7 +23,7 @@ class OriginService():
                       "TransportState": "&s=av&v=TransportState"
                      }
 
-        getVarUrl = ('http://' + self.fhdhr.config.dict["origin"]["ceton_ip"] + '/get_var?i=' + str(instance) + query_type[query])
+        getVarUrl = ('http://%s/get_var?i=%s%s' % (self.fhdhr.config.dict["origin"]["ceton_ip"],instance,query_type[query]))
 
         try:
             getVarUrlReq = self.fhdhr.web.session.get(getVarUrl)
@@ -44,7 +44,7 @@ class OriginService():
             result = self.get_ceton_getvar(instance, "TransportState")
 
             if result == "STOPPED":
-                self.fhdhr.logger.info('Selected Ceton tuner#: ' + str(instance))
+                self.fhdhr.logger.info('Selected Ceton tuner#: %s' % instance)
                 found = 1
                 break
 
@@ -99,10 +99,8 @@ class OriginService():
     def tuner_watchdog(self, chandict, instance):
         killit = 0
 
-        self.fhdhr.logger.info('Starting Ceton tuner watch dog on tuner#: ' + str(instance))
-        statusUrl = ('http://' + self.fhdhr.config.dict["fhdhr"]["address"] + ':' +
-                     str(self.fhdhr.config.dict["fhdhr"]["port"]) +
-                     '/api/tuners?method=status&tuner=' + str(instance))
+        self.fhdhr.logger.info('Starting Ceton tuner watch dog on tuner#: %s' % instance)
+        statusUrl = ('http://%s:%s/api/tuners?method=status&tuner=%s' % (self.fhdhr.config.dict["fhdhr"]["address"], self.fhdhr.config.dict["fhdhr"]["port"], instance))
 
         while True:
             time.sleep(6)
