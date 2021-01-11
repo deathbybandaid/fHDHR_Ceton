@@ -25,10 +25,11 @@ class OriginChannels():
             return []
 
         count = re.search('(?<=1 to 50 of )\w+', countReq.text)
-        count = int(int(count.group(0))/50+2)
+        count = int(count.group(0))
+        page = 0
 
-        for i in range(1, count):
-            stations_url = "http://%s/view_channel_map.cgi?page=%s&xml=1" % (self.fhdhr.config.dict["origin"]["ceton_ip"], i)
+        while True:
+            stations_url = "http://%s/view_channel_map.cgi?page=%s&xml=1" % (self.fhdhr.config.dict["origin"]["ceton_ip"], page)
 
             try:
                 stationsReq = self.fhdhr.web.session.get(stations_url, headers=url_headers)
@@ -40,19 +41,32 @@ class OriginChannels():
             stationsRes = xmltodict.parse(stationsReq.content)
 
             for station_item in stationsRes['channels']['channel']:
-                nameTmp = station_item["name"]
-                nameTmp_bytes = nameTmp.encode('ascii')
-                namebytes = base64.b64decode(nameTmp_bytes)
-                name = namebytes.decode('ascii')
-                clean_station_item = {
-                                    "name": name,
-                                    "callsign": name,
-                                    "number": station_item["number"],
-                                    "eia": station_item["eia"],
-                                    "id": station_item["sourceid"],
-                                    }
+               nameTmp = station_item["name"]
+               nameTmp_bytes = nameTmp.encode('ascii')
+               namebytes = base64.b64decode(nameTmp_bytes)
+               name = namebytes.decode('ascii')
+               clean_station_item = {
+                                "name": name,
+                                "callsign": name,
+                                "number": station_item["number"],
+                                "eia": station_item["eia"],
+                                "id": station_item["sourceid"],
+                                }
 
-                cleaned_channels.append(clean_station_item)
+               cleaned_channels.append(clean_station_item)
+
+            if (count > 1024):
+                count -= 1024
+                page = 21
+                continue
+            else:
+                break
+
+            if (count > 0):
+                count -= 50
+                page += 1
+            else:
+                break
 
         return cleaned_channels
 
