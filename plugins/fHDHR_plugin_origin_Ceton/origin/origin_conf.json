@@ -14,11 +14,6 @@
                           "value": "fHDHR_Ceton",
                           "config_file": false,
                           "config_web": false
-                        },
-          "required":{
-                          "value": "ceton/ceton_ip",
-                          "config_file": false,
-                          "config_web": false
                         }
   },
   "fhdhr":{
@@ -61,7 +56,8 @@
           "ceton_ip":{
                     "value": "none",
                     "config_file": true,
-                    "config_web": true
+                    "config_web": true,
+                    "required": true
                 }
   }
 }
