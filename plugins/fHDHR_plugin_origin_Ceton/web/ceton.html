@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h4 style="text-align: center;">{{ fhdhr.config.dict["main"]["servicename"] }} Status</h4>
+
+      <table class="center" style="width:50%">
+        <tr>
+        <tr>
+          <td>Setup</td>
+          <td>{{ origin_status_dict['Setup'] }}</td>
+        </tr>
+        <tr>
+          <td>Temperature</td>
+          <td>{{ origin_status_dict['Temp'] }}</td>
+        </tr>
+
+      <table class="center" style="width:50%">
+	  <tr>
+            <td>Tuner</td>
+	    <td>State</td>
+	    <td>Signal</td>
+	    <td>SNR</td>
+	    <td>Action</td>
+      {% for key in list(origin_status_dict.keys()) 
+      if "Tuner" in key: %}
+        <tr>
+          <td>{{ key[5:]  }}</td>
+          <td>{{ origin_status_dict[key]['State'] }}</td>
+          <td>{{ origin_status_dict[key]['Signal'] }}</td>
+          <td>{{ origin_status_dict[key]['SNR'] }}</td>
+	  {% if origin_status_dict[key]['State'] == "STOPPED" %}
+	     <td></td>
+	  {% endif %}
+	  {% if origin_status_dict[key]['State'] == "PLAYING" %}
+	     <td><button onclick="location.href='/api/ceton?method=close&tuner={{ key[5:] }}&redirect=%2Fceton'">Close</a></button></td>
+	  {% endif %}
+        </tr>
+      {% endfor %}
+
+{% endblock %}
