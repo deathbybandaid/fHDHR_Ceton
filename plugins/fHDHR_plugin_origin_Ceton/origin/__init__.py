@@ -1,6 +1,5 @@
 import base64
 import re
-import threading
 import time
 import xmltodict
 
@@ -100,36 +99,6 @@ class Plugin_OBJ():
 
         return 1
 
-    def tuner_watchdog(self, chandict, instance):
-        killit = 0
-
-        self.plugin_utils.logger.info('Starting Ceton tuner watch dog on tuner#: %s' % instance)
-        statusUrl = ('http://%s:%s/api/tuners?method=status&tuner=%s' % (self.plugin_utils.config.dict["fhdhr"]["address"], self.plugin_utils.config.dict["fhdhr"]["port"], instance))
-
-        while True:
-            time.sleep(1)
-
-            try:
-                statusUrlReq = self.plugin_utils.web.session.get(statusUrl)
-                statusUrlReq.raise_for_status()
-
-                tunerdict = statusUrlReq.json()
-
-                if tunerdict["status"] == "Active":
-                    if tunerdict["channel"] == chandict["number"]:
-                        continue
-                    else:
-                        killit = 1
-                else:
-                    killit = 1
-
-                if killit:
-                    self.startstop_ceton_tuner(instance, 0)
-                    break
-
-            except self.plugin_utils.web.exceptions.HTTPError as err:
-                self.plugin_utils.logger.error('Error getting status on fHDHR tuner#: %s: %s' % (instance, err))
-
     def get_channels(self):
         cleaned_channels = []
         url_headers = {'accept': 'application/xml;q=0.9, */*;q=0.8'}
@@ -217,9 +186,12 @@ class Plugin_OBJ():
         else:
             streamurl = None
 
-        wd = threading.Thread(target=self.tuner_watchdog, args=(chandict, instance))
-        wd.start()
-
         stream_info = {"url": streamurl}
 
         return stream_info
+
+    def close_stream(self, instance, args):
+
+        self.startstop_ceton_tuner(instance, 0)
+
+        return
