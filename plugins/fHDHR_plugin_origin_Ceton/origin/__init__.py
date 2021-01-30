@@ -1,6 +1,5 @@
 import base64
 import re
-import threading
 import time
 import xmltodict
 
